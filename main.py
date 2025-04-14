@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-AUTHORIZED_USER_ID = 412991871
+AUTHORIZED_USER_ID = 384210176
 VIDEO_PATH = "IMG_5922.MOV"
 
 # Обробник повідомлень
