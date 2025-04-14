@@ -10,7 +10,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AUTHORIZED_USER_ID = 412991871
-VIDEO_LINK = 'https://files.catbox.moe/fa06ni.MOV'  # Пряме посилання на відео
+VIDEO_PATH = "IMG_5922.MOV"
 
 # Обробник повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -19,9 +19,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     if update.effective_user and update.effective_user.id == AUTHORIZED_USER_ID:
         print(f"✅ Повідомлення від дозволеного користувача: {update.effective_user.id}")
-        await update.message.reply_video(video=VIDEO_LINK)
-    else:
-        print(f"⛔️ Відхилено повідомлення від користувача: {update.effective_user.id if update.effective_user else 'None'}")
+        with open(VIDEO_PATH, "rb") as video_file:
+            await update.message.reply_video(video=video_file)
 
 # Ініціалізація Telegram-бота
 application = ApplicationBuilder().token(BOT_TOKEN).build()
