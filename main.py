@@ -1,5 +1,4 @@
 import os
-import json
 from aiohttp import web
 from telegram import Update
 from telegram.ext import (
@@ -11,7 +10,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AUTHORIZED_USER_ID = 412991871
-VIDEO_LINK = 'https://t.me/c/1294934054/299430'
+VIDEO_LINK = 'https://files.catbox.moe/fa06ni.MOV'  # Пряме посилання на відео
 
 # Обробник повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -43,7 +42,6 @@ async def on_startup(app: web.Application):
 async def handle_webhook(request: web.Request):
     data = await request.json()
     print("🔔 Отримано запит на /webhook:")
-    print(json.dumps(data, indent=2))
     update = Update.de_json(data, application.bot)
     await application.process_update(update)
     return web.Response()
