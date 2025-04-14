@@ -12,12 +12,14 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 AUTHORIZED_USER_ID = 384210176
 VIDEO_LINK = 'https://t.me/c/1294934054/299430'
 
-# Обробник повідомлень
+# Обробник повідомлень тільки від авторизованого користувача
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id == AUTHORIZED_USER_ID:
+    if update.message is None:
+        return  # ігноруємо не-текстові оновлення
+
+    # Перевіряємо, що повідомлення від дозволеного користувача
+    if update.effective_user and update.effective_user.id == AUTHORIZED_USER_ID:
         await update.message.reply_video(video=VIDEO_LINK)
-    else:
-        await update.message.reply_text("Доступ заборонено.")
 
 # Ініціалізація Telegram-бота
 application = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -28,7 +30,7 @@ app = web.Application()
 
 # Встановлення webhook під час запуску
 async def on_startup(app: web.Application):
-    await application.initialize()  # <-- важливо!
+    await application.initialize()
     webhook_url = os.getenv("RENDER_EXTERNAL_URL") + "/webhook"
     await application.bot.set_webhook(webhook_url)
     print(f"Webhook встановлено: {webhook_url}")
