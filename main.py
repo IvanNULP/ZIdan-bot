@@ -1,38 +1,45 @@
 import os
+from aiohttp import web
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
+from telegram.ext import (
+    Application,
+    MessageHandler,
+    ContextTypes,
+    filters,
+)
 
-# Дані
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AUTHORIZED_USER_ID = 384210176
 VIDEO_LINK = 'https://t.me/c/1294934054/299430'
 
-# Основний обробник повідомлень
+# Обробник повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id == AUTHORIZED_USER_ID:
         await update.message.reply_video(video=VIDEO_LINK)
     else:
         await update.message.reply_text("Доступ заборонено.")
 
-# Основна функція запуску Webhook
+# Основна логіка
 async def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Отримання публічного URL Render Web Service
-    WEBHOOK_HOST = os.getenv("RENDER_EXTERNAL_URL")
-    WEBHOOK_PATH = "/webhook"
-    WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+    # Створення aiohttp web-серверу
+    webhook_path = "/webhook"
+    port = int(os.environ.get("PORT", 8443))
+    site_url = os.getenv("RENDER_EXTERNAL_URL")  # Наприклад: https://your-service.onrender.com
+    webhook_url = f"{site_url}{webhook_path}"
 
-    print(f"Встановлюю Webhook: {WEBHOOK_URL}")
-    await app.bot.set_webhook(WEBHOOK_URL)
+    await app.bot.set_webhook(webhook_url)
+    return app
 
-    await app.run_webhook(
+# Запуск aiohttp сервера
+if __name__ == '__main__':
+    from telegram.ext.webhookhandler import run_webhook
+    import asyncio
+    asyncio.run(run_webhook(
+        main(),
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8443)),
-        path=WEBHOOK_PATH,
-    )
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+        path="/webhook"
+    ))
