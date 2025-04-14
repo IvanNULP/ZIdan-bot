@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-AUTHORIZED_USER_ID = 384210176
+AUTHORIZED_USER_ID = 412991871  # <-- новий user_id
 VIDEO_LINK = 'https://t.me/c/1294934054/299430'
 
 # Обробник повідомлень тільки від авторизованого користувача
@@ -17,7 +17,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is None:
         return  # ігноруємо не-текстові оновлення
 
-    # Перевіряємо, що повідомлення від дозволеного користувача
     if update.effective_user and update.effective_user.id == AUTHORIZED_USER_ID:
         await update.message.reply_video(video=VIDEO_LINK)
 
