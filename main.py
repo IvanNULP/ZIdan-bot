@@ -28,6 +28,7 @@ app = web.Application()
 
 # Встановлення webhook під час запуску
 async def on_startup(app: web.Application):
+    await application.initialize()  # <-- важливо!
     webhook_url = os.getenv("RENDER_EXTERNAL_URL") + "/webhook"
     await application.bot.set_webhook(webhook_url)
     print(f"Webhook встановлено: {webhook_url}")
